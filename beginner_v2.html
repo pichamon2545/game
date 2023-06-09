@@ -36,8 +36,9 @@
       auto_preload: true
     }
 
-    /* create timeline */
+    /* create timelines */
     var timeline = [];
+    var flow = [];
 
     /* welcome message */
     var welcome = {
@@ -57,6 +58,7 @@
         return uniform(400, 1500);
       }
     };
+    flow.push(fixation);
 
     var cue = {
       type: jsPsychAudioKeyboardResponsePersist,
@@ -64,12 +66,14 @@
       prompt: '<div style="height: 200px;width: 200px;background-color: #DC143C;border-radius: 50%;display: inline-block;"></div>',
       trial_duration: 100
     };
+    flow.push(cue);
 
     var reaction_window = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
       trial_duration: 400,
     }
+    flow.push(reaction_window);
 
     var early_window = {
       type: jsPsychHtmlKeyboardResponse,
@@ -80,6 +84,9 @@
       },
       on_finish: function(data) {
         data.early = (data.rt != null);
+        if (data.early) {
+            jsPsych.addNodeToEndOfTimeline(error_tone)
+        }
       }
     }  
 
