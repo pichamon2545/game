@@ -11,7 +11,7 @@
   <body></body>
   <script>
 
-    var n = 10
+    var n = 3
 
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
@@ -70,7 +70,7 @@
         task: 'response'
       },
       on_finish: function (data) {
-        data.correct = data.rt > 2300 && data.rt < 4300;
+        data.correct = data.rt >= 3333 && data.rt <= 7000;
         data.response_time = data.rt
       }
     };
@@ -81,7 +81,6 @@
         var trials = jsPsych.data.get().filter({ task: 'response' });
         var latest_rt = trials.select('rt').values.slice(-1);
         return `<h3>Your response time was ${latest_rt /= 1000} seconds.</h3>
-        <p>You</p>
         <p>The next trial will start in 2 seconds.</p>`
       },
       choices: "NO_KEYS",
@@ -94,8 +93,7 @@
     /* define test procedure */
     var test_procedure = {
       timeline: [fixation, test, feedback],
-      repetitions: n,
-      randomize_order: true
+      repetitions: n
     };
     timeline.push(test_procedure);
 
