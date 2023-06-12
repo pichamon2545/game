@@ -74,19 +74,10 @@
       },
     };
 
-    var reaction_window = {
-      type: jsPsychHtmlKeyboardResponsePersist,  
-      stimulus: '',
-      trial_duration: 400,
-      data: {
-        task: 'reaction_window'
-      },
-    }
-
     var early_window = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '',
-      trial_duration: 2833,
+      trial_duration: 3233,
       data: {
         task: 'early_window'
       },
@@ -108,7 +99,7 @@
     var early = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
-      trial_duration: 6300 - jsPsych.data.get().filter({ task: 'early_window' }).select('rt').values.slice(-1),
+      trial_duration: 6900 - jsPsych.data.get().filter({ task: 'early_window' }).select('rt').values.slice(-1),
       data: {
         task: 'early'
       },
@@ -117,7 +108,7 @@
     var reward_window = {
       type: jsPsychHtmlKeyboardResponse,  
       stimulus: '',
-      trial_duration: 1667,
+      trial_duration: 3667,
       data: {
         task: 'reward_window'
       },
@@ -146,38 +137,6 @@
       },
     }
 
-    var reward_tone = {
-      type: jsPsychAudioKeyboardResponsePersist,
-      stimulus: 'tones/5050.mp3',
-      trial_duration: 200,
-      data: {
-        task: 'reward_tone'
-      },
-    }
-
-    var waited = {
-      type: jsPsychHtmlKeyboardResponse,  
-      stimulus: '',
-      data: {
-        task: 'waited'
-      },
-      trial_duration: 1800,
-      on_finish: function(data) {
-        data.pressed = (data.rt != null);
-      }
-    }
-
-    var show_nickel = {
-      type: jsPsychHtmlKeyboardResponsePersist,  
-      stimulus: '<div style="font-size:200px;">💰</div>',
-      stimulus_duration: 200,
-      trial_duration: 2000 - jsPsych.data.get().filter({ task: 'waited' }).select('rt').values.slice(-1),
-      on_finish: whitescreen,
-      data: {
-        task: 'show_nickel'
-      },
-    }
-
     var ITI = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
@@ -187,60 +146,23 @@
       },
     }
 
-    var if_wait = {
-      type: jsPsychHtmlKeyboardResponse,  
+    var wait_error = {
+      type: jsPsychAudioKeyboardResponsePersist,
+      stimulus: 'tones/440.mp3',
       on_start: whitescreen,
-      stimulus: '',
+      trial_duration: 200,
       data: {
-        task: 'if_wait'
+        task: 'wait_error'
       },
-      trial_duration: 10000,
-      on_finish: function(data) {
-        data.pressed = (data.rt != null);
-      }
     }
 
-    var show_nickel_white = {
+    var ITI_wait = {
       type: jsPsychHtmlKeyboardResponsePersist,  
-      stimulus: '<div style="font-size:200px;">💰</div>',
-      stimulus_duration: 200,
-      trial_duration: 10000 - jsPsych.data.get().filter({ task: 'if_wait' }).select('rt').values.slice(-1)
-    }
-
-    var nickel_ITI_node_press = {
-      timeline: [show_nickel_white],
-      conditional_function: function(){
-        var nickel_ITI_press = jsPsych.data.get().filter({ task: 'if_wait' }).last(1).values()[0].pressed;
-        if (nickel_ITI_press) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-
-    var nickel_node_press = {
-      timeline: [show_nickel, ITI],
-      conditional_function: function(){
-        var nickel_press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].pressed;
-        if (nickel_press) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-
-    var nickel_node_wait = {
-      timeline: [if_wait, nickel_ITI_node_press],
-      conditional_function: function(){
-        var nickel_press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].pressed;
-        if (nickel_press) {
-          return false;
-        } else {
-          return true;
-        }
-      }
+      stimulus: '',
+      trial_duration: 9800,
+      data: {
+        task: 'ITI_wait'
+      },
     }
 
     var reward_node_press = {
@@ -256,7 +178,7 @@
     }
 
     var reward_node_wait = {
-      timeline: [reward_tone, waited, nickel_node_press, nickel_node_wait],
+      timeline: [wait_error, ITI_wait],
       conditional_function: function(){
         var reward_press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].pressed;
         if (reward_press) {
