@@ -21,7 +21,11 @@
         document.body.style.backgroundColor = 'white'
     }
 
-    var n = 5;
+    /* number of trials */
+    var n = 1;
+
+    /* trial number */
+    var trial_number = 1;
 
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
@@ -59,9 +63,12 @@
       trial_duration: function(){
         return uniform(400, 1500);
       },
-      data: {
-        task: 'fixation'
-      },
+      data: function(){
+        return {
+          task: 'fixation',
+          trial_no: trial_number
+        };
+      }
     };
 
     var cue = {
@@ -69,8 +76,11 @@
       stimulus: 'tones/3300.mp3',
       prompt: '<div style="height: 200px;width: 200px;background-color: #DC143C;border-radius: 50%;display: inline-block;"></div>',
       trial_duration: 100,
-      data: {
-        task: 'cue'
+      data: function(){
+        return {
+          task: 'cue',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
@@ -83,8 +93,11 @@
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
       trial_duration: 400,
-      data: {
-        task: 'reaction_window'
+      data: function(){
+        return {
+          task: 'reaction_window',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
@@ -99,8 +112,11 @@
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '',
       trial_duration: 2833,
-      data: {
-        task: 'early_window'
+      data: function(){
+        return {
+          task: 'early_window',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         data.early = (data.rt != null);
@@ -116,13 +132,16 @@
       stimulus: 'tones/440.mp3',
       on_start: whitescreen,
       trial_duration: 200,
-      data: {
-        task: 'error_tone'
+      data: function(){
+        return {
+          task: 'error_tone',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'early_window' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
           var rts_corrected = rts.map(v=> v + Number(press) + 500);
           data.time = rts_corrected;
         }
@@ -132,14 +151,20 @@
     var early = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
-      trial_duration: 6300 - jsPsych.data.get().filter({ task: 'early_window' }).select('rt').values.slice(-1),
-      data: {
-        task: 'early'
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
+        return 6300 - press;
+      },
+      data: function(){
+        return {
+          task: 'early',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'early_window' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
           var rts_corrected = rts.map(v=> v + Number(press) + 700);
           data.time = rts_corrected;
         }
@@ -150,8 +175,11 @@
       type: jsPsychHtmlKeyboardResponse,  
       stimulus: '',
       trial_duration: 1667,
-      data: {
-        task: 'reward_window'
+      data: function(){
+        return {
+          task: 'reward_window',
+          trial_no: trial_number
+        };
       },
       on_finish: function (data) {
         data.pressed = (data.rt != null);
@@ -167,13 +195,16 @@
       stimulus: 'tones/5050.mp3',
       prompt: '<div style="font-size:200px;">💰</div>',
       trial_duration: 200,
-      data: {
-        task: 'if_press'
+      data: function(){
+        return {
+          task: 'if_press',
+          trial_no: trial_number
+        };
       },
       on_finish: function (data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'reward_window' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
           var rts_corrected = rts.map(v=> v + Number(press) + 3333);
           data.time = rts_corrected;
         }
@@ -183,14 +214,20 @@
     var rewarded = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
-      trial_duration: 3467 - jsPsych.data.get().filter({ task: 'reward_window' }).select('rt').values.slice(-1),
-      data: {
-        task: 'rewarded'
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+        return 3467 - press;
+      },
+      data: function(){
+        return {
+          task: 'rewarded',
+          trial_no: trial_number
+        };
       },
       on_finish: function (data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'reward_window' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
           var rts_corrected = rts.map(v=> v + Number(press) + 3533);
           data.time = rts_corrected;
         }
@@ -202,8 +239,11 @@
       type: jsPsychAudioKeyboardResponsePersist,
       stimulus: 'tones/5050.mp3',
       trial_duration: 200,
-      data: {
-        task: 'reward_tone'
+      data: function(){
+        return {
+          task: 'reward_tone',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
@@ -217,8 +257,11 @@
     var waited = {
       type: jsPsychHtmlKeyboardResponse,  
       stimulus: '',
-      data: {
-        task: 'waited'
+      data: function(){
+        return {
+          task: 'waited',
+          trial_no: trial_number
+        };
       },
       trial_duration: 1800,
       on_finish: function(data) {
@@ -234,13 +277,19 @@
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '<div style="font-size:200px;">💰</div>',
       stimulus_duration: 200,
-      trial_duration: 2000 - jsPsych.data.get().filter({ task: 'waited' }).select('rt').values.slice(-1),
-      data: {
-        task: 'show_nickel'
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
+        return 1800 - press;
+      },
+      data: function(){
+        return {
+          task: 'show_nickel',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
-          var press = jsPsych.data.get().filter({ task: 'waited' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
           var rts = JSON.parse(data.rt);
           var rts_corrected = rts.map(v=> v+ Number(press) + 5200);
           data.time = rts_corrected;
@@ -253,15 +302,19 @@
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
       trial_duration: 10000,
-      data: {
-        task: 'ITI'
+      data: function(){
+        return {
+          task: 'ITI',
+          trial_no: trial_number
+        };
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
           var rts_corrected = rts.map(v=> v+7000);
           data.time = rts_corrected;
-          }
+          };
+        trial_number += 1;
       }
     }
 
@@ -269,8 +322,11 @@
       type: jsPsychHtmlKeyboardResponse,  
       on_start: whitescreen,
       stimulus: '',
-      data: {
-        task: 'if_wait'
+      data: function(){
+        return {
+          task: 'if_wait',
+          trial_no: trial_number
+        };
       },
       trial_duration: 10000,
       on_finish: function(data) {
@@ -286,14 +342,24 @@
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '<div style="font-size:200px;">💰</div>',
       stimulus_duration: 200,
-      trial_duration: 10000 - jsPsych.data.get().filter({ task: 'if_wait' }).select('rt').values.slice(-1),
+      data: function(){
+        return {
+          task: 'show_nickel_white',
+          trial_no: trial_number
+        };
+      },
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'if_wait' }).last(1).values()[0].rt;
+        return 10000 - press;
+      },
       on_finish: function(data){
         if (data.rt != "[]"){
-          var press = jsPsych.data.get().filter({ task: 'if_wait' }).select('rt').values.slice(-1);
+          var press = jsPsych.data.get().filter({ task: 'if_wait' }).last(1).values()[0].rt;
           var rts = JSON.parse(data.rt);
           var rts_corrected = rts.map(v=> v+ Number(press)+7000);
           data.time = rts_corrected;
-        }
+        };
+        trial_number += 1;
       }
     }
 
