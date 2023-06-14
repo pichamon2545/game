@@ -200,9 +200,9 @@
 
     var wait_error = {
       type: jsPsychAudioKeyboardResponsePersist,
-      stimulus: 'tones/440.mp3',
+      stimulus: 'tones/131.mp3',
       on_start: whitescreen,
-      trial_duration: 200,
+      trial_duration: 2000,
       data: {
         task: 'wait_error'
       },
@@ -218,14 +218,14 @@
     var ITI_wait = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
-      trial_duration: 9800,
+      trial_duration: 8000,
       data: {
         task: 'ITI_wait'
       },
       on_finish: function(data) {
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+7200);
+          var rts_corrected = rts.map(v=> v+9000);
           data.time = rts_corrected;
         }
       }
