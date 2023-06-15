@@ -16,10 +16,10 @@
     import uniform from 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-uniform@esm/index.mjs';
     function blackscreen() {
         document.body.style.backgroundColor = 'black'
-    }
+    };
     function whitescreen() {
         document.body.style.backgroundColor = 'white'
-    }
+    };
 
     /* number of trials */
     var n = 5;
@@ -39,7 +39,7 @@
     var preload = {
       type: jsPsychPreload,
       auto_preload: true
-    }
+    };
 
     /* create timeline */
     var timeline = [];
@@ -107,7 +107,7 @@
           data.time = rts_corrected;
         }
       }
-    }
+    };
 
     var early_window = {
       type: jsPsychHtmlKeyboardResponse,
@@ -126,7 +126,7 @@
           data.time = rt_corrected;
         }
       }
-    }  
+    };
 
     var error_tone = {
       type: jsPsychAudioKeyboardResponsePersist,
@@ -147,7 +147,7 @@
           data.time = rts_corrected;
         }
       }
-    }
+    };
 
     var early = {
       type: jsPsychHtmlKeyboardResponsePersist,  
@@ -170,7 +170,7 @@
           data.time = rts_corrected;
         }
       }
-    }
+    };
 
     var reward_window = {
       type: jsPsychHtmlKeyboardResponse,  
@@ -189,7 +189,7 @@
           data.time = rt_corrected;
         }
       }
-    }
+    };
 
     var if_press = {
       type: jsPsychAudioKeyboardResponsePersist,
@@ -210,7 +210,7 @@
           data.time = rts_corrected;
         }
       }
-    }
+    };
 
     var rewarded = {
       type: jsPsychHtmlKeyboardResponsePersist,  
@@ -234,7 +234,7 @@
         }
         whitescreen();
       }
-    }
+    };
 
     var reward_tone = {
       type: jsPsychAudioKeyboardResponsePersist,
@@ -253,7 +253,7 @@
           data.time = rts_corrected;
         }
       }
-    }
+    };
 
     var waited = {
       type: jsPsychHtmlKeyboardResponse,  
@@ -272,7 +272,7 @@
           data.time = rt_corrected;
         }
       }
-    }
+    };
 
     var show_nickel = {
       type: jsPsychHtmlKeyboardResponsePersist,  
@@ -297,7 +297,7 @@
         }
         whitescreen();
       }
-    }
+    };
 
     var ITI = {
       type: jsPsychHtmlKeyboardResponsePersist,  
@@ -317,7 +317,7 @@
           };
         trial_number += 1;
       }
-    }
+    };
 
     var if_wait = {
       type: jsPsychHtmlKeyboardResponse,  
@@ -337,7 +337,7 @@
           data.time = rt_corrected;
         }
       }
-    }
+    };
 
     var show_nickel_white = {
       type: jsPsychHtmlKeyboardResponsePersist,  
@@ -362,7 +362,7 @@
         };
         trial_number += 1;
       }
-    }
+    };
 
     var nickel_ITI_node_press = {
       timeline: [show_nickel_white],
@@ -374,7 +374,7 @@
           return false;
         }
       }
-    }
+    };
 
     var nickel_node_press = {
       timeline: [show_nickel, ITI],
@@ -386,7 +386,7 @@
           return false;
         }
       }
-    }
+    };
 
     var nickel_node_wait = {
       timeline: [if_wait, nickel_ITI_node_press],
@@ -398,7 +398,7 @@
           return true;
         }
       }
-    }
+    };
 
     var reward_node_press = {
       timeline: [if_press, rewarded, ITI],
@@ -410,7 +410,7 @@
           return false;
         }
       }
-    }
+    };
 
     var reward_node_wait = {
       timeline: [reward_tone, waited, nickel_node_press, nickel_node_wait],
@@ -422,7 +422,7 @@
           return true;
         }
       }
-    }
+    };
 
     var early_node_press = {
       timeline: [error_tone, early, ITI],
@@ -434,7 +434,7 @@
           return false;
         }
       }
-    }
+    };
 
     var early_node_wait = {
       timeline: [reward_window, reward_node_press, reward_node_wait],
@@ -446,13 +446,13 @@
           return true;
         }
       }
-    }
+    };
 
     /* define test procedure */
     var test_procedure = {
       timeline: [fixation, cue, reaction_window, early_window, early_node_press, early_node_wait],
       repetitions: n
-    }
+    };
     timeline.push(test_procedure);
 
     /* start the experiment */
