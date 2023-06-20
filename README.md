@@ -33,3 +33,11 @@ Some replacements:
 - Trials (fixation -> **visual** start cue -> page showing their response time)
 - Debrief page (how many trials the subject got right, total reward earned)
 - not thoroughly commented
+### V2
+- Added another instruction page to clarify the fixation
+- Random fixation duration (0.4-1.5s uniform distribution, like the mouse task)
+- Added changing background colors to match the mouse tasks (trial - black, ITI - white)
+- Added audio (3300 Hz) to start cue
+- Added audio feedback cues (440 Hz, 5050 Hz, 131 Hz)
+- Verbal feedback after each trial (too early/correct/too late)
+- Record the trial number for each trial
