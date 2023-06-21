@@ -26,6 +26,10 @@ Some replacements:
 - Money bag emoji appears for 200ms
 - Each trial records the trial number and all key presses in that trial (milliseconds after the cue)
 - not thoroughly commented
+### V2 (06/21/2023)
+- Encourage pressing after reward tone in beginner
+- Show money bag emoji for longer (300ms)
+- Money bag emoji shows for the whole 300ms even if the subject presses very close to 7000ms
 ## Online psychology experiment
 ### V1
 - Welcome page
