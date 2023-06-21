@@ -30,6 +30,9 @@ Some replacements:
 - Encourage pressing after reward tone in beginner
 - Show money bag emoji for longer (300ms)
 - Money bag emoji shows for the whole 300ms even if the subject presses very close to 7000ms
+v2.1
+- Added progress bar
+- Added a debriefing page (how many trials the subject got right, total reward earned)
 ## Online psychology experiment
 ### V1
 - Welcome page
