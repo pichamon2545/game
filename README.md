@@ -26,6 +26,10 @@ Some replacements:
 - Money bag emoji appears for 200ms
 - Each trial records the trial number and all key presses in that trial (milliseconds after the cue)
 - not thoroughly commented
+### V2 (06/21/2023)
+- Encourage pressing after reward tone in beginner
+- Show money bag emoji for longer (300ms)
+- Money bag emoji shows for the whole 300ms even if the subject presses very close to 7000ms
 ## Online psychology experiment
 ### V1
 - Welcome page
@@ -33,3 +37,11 @@ Some replacements:
 - Trials (fixation -> **visual** start cue -> page showing their response time)
 - Debrief page (how many trials the subject got right, total reward earned)
 - not thoroughly commented
+### V2 (06/15/2023)
+- Added another instruction page to clarify the fixation
+- Random fixation duration (0.4-1.5s uniform distribution, like the mouse task)
+- Added changing background colors to match the mouse tasks (trial - black, ITI - white)
+- Added audio (3300 Hz) to start cue
+- Added audio feedback cues (440 Hz, 5050 Hz, 131 Hz) and money bag emoji for correct trials
+- Verbal feedback after each trial (too early/correct/too late)
+- Record the trial number for each trial
