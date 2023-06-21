@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Timing Game</title>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-html-keyboard-response-persist.js"></script>
+    <script src="jspsych/plugin-audio-keyboard-response.js"></script>
+    <script src="jspsych/plugin-audio-keyboard-response-persist.js"></script>
+    <!-- <script src="jspsych/plugin-image-keyboard-response.js"></script> -->
+    <script src="jspsych/plugin-preload.js"></script>
+    <link rel="stylesheet" href="jspsych/jspsych.css">
+  </head>
+  <body></body>
+  <script type="module">
+    import uniform from 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-uniform@esm/index.mjs';
+    function blackscreen() {
+        document.body.style.backgroundColor = 'black'
+    };
+    function whitescreen() {
+        document.body.style.backgroundColor = 'white'
+    };
+
+    /* number of trials */
+    var n = 2;
+
+    /* trial number */
+    var trial_number = 1;
+
+    
+    /* initialize jsPsych */
+    var jsPsych = initJsPsych({
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+    //   override_safe_mode: true
+    });
+
+    var preload = {
+      type: jsPsychPreload,
+      auto_preload: true
+    };
+
+    /* create timeline */
+    var timeline = [];
+
+    /* welcome message */
+    var welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<h1>Welcome to the experiment</h1>
+      <p>Press any key to continue.</p>`,
+      data: {
+        task: 'welcome'
+      },
+    };
+    timeline.push(welcome);
+
+    /* begin trials */
+    var fixation = {
+      type: jsPsychHtmlKeyboardResponse,
+      on_start: blackscreen,
+      stimulus: '',
+      choices: "NO_KEYS",
+      trial_duration: function(){
+        return uniform(400, 1500);
+      },
+      data: function(){
+        return {
+          task: 'fixation',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var cue = {
+      type: jsPsychAudioKeyboardResponsePersist,
+      stimulus: 'tones/3300.mp3',
+      prompt: '<div style="height: 200px;width: 200px;background-color: #DC143C;border-radius: 50%;display: inline-block;"></div>',
+      trial_duration: 100,
+      data: function(){
+        return {
+          task: 'cue',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          data.time = JSON.parse(data.rt);
+        }
+      }
+    };
+
+    var early_window = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '',
+      trial_duration: 3233,
+      data: function(){
+        return {
+          task: 'early_window',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        data.early = (data.rt != null);
+        if (data.early) {
+          var rt_corrected = data.rt + 100;
+          data.time = rt_corrected;
+        }
+      }
+    } ; 
+
+    var error_tone = {
+      type: jsPsychAudioKeyboardResponsePersist,
+      stimulus: 'tones/440.mp3',
+      on_start: whitescreen,
+      trial_duration: 200,
+      data: function(){
+        return {
+          task: 'error_tone',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
+          var rts_corrected = rts.map(v=> v + Number(press) + 100);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
+    var early = {
+      type: jsPsychHtmlKeyboardResponsePersist,  
+      stimulus: '',
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
+        return 6700 - press;
+      },
+      data: function(){
+        return {
+          task: 'early',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
+          var rts_corrected = rts.map(v=> v + Number(press) + 300);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
+    var reward_window = {
+      type: jsPsychHtmlKeyboardResponse,  
+      stimulus: '',
+      trial_duration: 3667,
+      data: function(){
+        return {
+          task: 'reward_window',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function (data) {
+        data.pressed = (data.rt != null);
+        if (data.pressed) {
+          var rt_corrected = data.rt + 3333;
+          data.time = rt_corrected;
+        }
+      }
+    };
+
+    var if_press = {
+      type: jsPsychAudioKeyboardResponsePersist,
+      stimulus: 'tones/5050.mp3',
+      prompt: '<div style="font-size:200px;">💰</div>',
+      trial_duration: 300,
+      data: function(){
+        return {
+          task: 'if_press',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function (data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+          var rts_corrected = rts.map(v=> v + Number(press) + 3333);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
+    var rewarded = {
+      type: jsPsychHtmlKeyboardResponsePersist,  
+      stimulus: '',
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+        return 3367 - press;
+      },
+      data: function(){
+        return {
+          task: 'rewarded',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function (data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+          var rts_corrected = rts.map(v=> v + Number(press) + 3633);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
+    var ITI = {
+      type: jsPsychHtmlKeyboardResponsePersist,  
+      stimulus: '',
+      trial_duration: 10000,
+      on_start: whitescreen,
+      data: function(){
+        return {
+          task: 'ITI',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var rts_corrected = rts.map(v=> v+7000);
+          data.time = rts_corrected;
+        };
+        trial_number += 1;
+      }
+    };
+
+    var wait_error = {
+      type: jsPsychAudioKeyboardResponsePersist,
+      stimulus: 'tones/131.mp3',
+      on_start: whitescreen,
+      trial_duration: 2000,
+      data: function(){
+        return {
+          task: 'wait_error',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var rts_corrected = rts.map(v=> v+7000);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
+    var ITI_wait = {
+      type: jsPsychHtmlKeyboardResponsePersist,  
+      stimulus: '',
+      trial_duration: 8000,
+      data: function(){
+        return {
+          task: 'ITI_wait',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var rts_corrected = rts.map(v=> v+9000);
+          data.time = rts_corrected;
+        };
+        trial_number += 1;
+      }
+    };
+
+    var close_call_node = {
+        timeline: [rewarded],
+        conditional_function: function(){
+            var reward_rt = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+            if (reward_rt < 3367){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+    
+    var reward_node_press = {
+      timeline: [if_press, close_call_node, ITI],
+      conditional_function: function(){
+        var reward_press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].pressed;
+        if (reward_press) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    var reward_node_wait = {
+      timeline: [wait_error, ITI_wait],
+      conditional_function: function(){
+        var reward_press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].pressed;
+        if (reward_press) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    };
+
+    var early_node_press = {
+      timeline: [error_tone, early, ITI],
+      conditional_function: function(){
+        var early = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].early;
+        if (early) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    var early_node_wait = {
+      timeline: [reward_window, reward_node_press, reward_node_wait],
+      conditional_function: function(){
+        var early = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].early;
+        if (early) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    };
+
+    /* define test procedure */
+    var test_procedure = {
+      timeline: [fixation, cue, early_window, early_node_press, early_node_wait],
+      repetitions: n
+    };
+    timeline.push(test_procedure);
+
+
+    /* start the experiment */
+    jsPsych.run(timeline);
+  
+  </script>
+</html>
