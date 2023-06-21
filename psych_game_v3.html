@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Timing Game</title>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-audio-keyboard-response.js"></script>
+    <script src="jspsych/plugin-preload.js"></script>
+    <link rel="stylesheet" href="jspsych/jspsych.css">
+  </head>
+  <body></body>
+  <script type="module">
+    import uniform from 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-uniform@esm/index.mjs';
+    function blackscreen() {
+        document.body.style.backgroundColor = 'black'
+    }
+    function whitescreen() {
+        document.body.style.backgroundColor = 'white'
+    }
+
+    /* number of trials */
+    var n = 5;
+    /* trial number */
+    var trial_number = 1;
+    /* correct trials */
+    var correct_trials = 0;
+
+    /* initialize jsPsych */
+    var jsPsych = initJsPsych({
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+      show_progress_bar: true,
+      auto_update_progress_bar: false
+    });
+
+    var preload = {
+      type: jsPsychPreload,
+      auto_preload: true
+    };
+
+    /* create timeline */
+    var timeline = [];
+
+    /* define welcome message trial */
+    var welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<h1>Welcome to the experiment</h1>
+      <p>Press any key to begin.</p>`,
+      on_start: function() {
+        // set progress bar to 0 at the start of experiment
+        jsPsych.setProgressBar(0);
+      } 
+    };
+    timeline.push(welcome);
+
+    /* define instructions trial */
+    var instructions1 = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+        <h1>Instructions</h1>
+        <p>
+          In this experiment, you will play a Timing Game. You goal will be to press 
+          a key within the <br/> 3.3 to 7 second window after an audio-visual cue. 
+          For each time you press the key in that window, <br/> you will receive a $0.05
+          reward. We ask that you do not “count” but rather “feel” the amount <br/> of time 
+          that has elapsed.</p> 
+        <p>You will have about 200 opportunities to play, which means you could 
+          earn up to $10 <br/> on top of the $15 you are already receiving for your participation.</p>`
+    };
+    timeline.push(instructions1);
+
+    var instructions2 = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <h1>Instructions</h1>
+      <p>Each trial will start with a fixation (shown below) for a random amount of time, 
+        followed by an audiovisual cue, and your goal <br/> will be to press within the
+        3.3 - 7 second window after that cue.</p>
+      <br/><br/>
+      <div style="font-size:60px;">+</div>
+      <br/><br/><br/>
+      <p>When you are ready, press any key to begin the experiment.</p>`,
+      post_trial_gap: 300
+    };
+    timeline.push(instructions2);
+
+    /* define fixation and test trials */
+    var fixation = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<div style="font-size:60px; color: white">+</div>',
+      choices: "NO_KEYS",
+      on_start: blackscreen,
+      trial_duration: function(){
+        return uniform(400, 1500);
+      },
+      data: function(){
+        return {
+          task: 'fixation',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var cue = {
+      type: jsPsychAudioKeyboardResponse,
+      stimulus: 'tones/3300.mp3',
+      prompt: '<div style="font-size:80px; color:red">START</div>',
+      trial_duration: 100,
+      choices: "NO_KEYS",
+      data: function(){
+        return {
+          task: 'cue',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var early_window = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '',
+      trial_duration: 3233,
+      data: function(){
+        return {
+          task: 'early_window',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        data.early = (data.rt != null);
+      }
+    };
+    
+    var error_tone = {
+      type: jsPsychAudioKeyboardResponse,
+      stimulus: 'tones/440.mp3',
+      on_start: whitescreen,
+      trial_duration: 200,
+      choices: "NO_KEYS",
+      data: function(){
+        return {
+          task: 'error_tone',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var early = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        var latest_rt = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
+        var rt_corrected = latest_rt + 100;
+        return `<h3>Your response time was ${rt_corrected /= 1000} seconds.</h3>
+          <p>Your response was <span style="color: red">TOO EARLY</span>.</p>
+          <p>The next trial will start in 2 seconds.</p>`;
+      },
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+      data: function(){
+        return {
+          task: 'early',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(){
+        trial_number +=1;
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
+      }
+    };
+
+    var reward_window = {
+      type: jsPsychHtmlKeyboardResponse,  
+      stimulus: '',
+      trial_duration: 3667,
+      data: function(){
+        return {
+          task: 'reward_window',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function (data) {
+        data.pressed = (data.rt != null);
+      }
+    };
+
+    var reward_tone = {
+      type: jsPsychAudioKeyboardResponse,
+      stimulus: 'tones/5050.mp3',
+      prompt: '<div style="font-size:200px;">💰</div>',
+      trial_duration: 200,
+      choices: "NO_KEYS",
+      data: function(){
+        return {
+          task: 'reward_tone',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var correct = {
+      type: jsPsychHtmlKeyboardResponse,
+      on_start: whitescreen,
+      stimulus: function() {
+        var latest_rt = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
+        var rt_corrected = latest_rt + 3333;
+        return `<h3>Your response time was ${rt_corrected /= 1000} seconds.</h3>
+          <p>Your response was <span style="color: green">CORRECT</span>.</p>
+          <p>The next trial will start in 2 seconds.</p>`;
+      },
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+      data: function(){
+        return {
+          task: 'correct',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(){
+        trial_number +=1;
+        correct_trials +=1;
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
+      }
+    };
+
+    var timeout_tone = {
+      type: jsPsychAudioKeyboardResponse,
+      stimulus: 'tones/131.mp3',
+      on_start: whitescreen,
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+      data: function(){
+        return {
+          task: 'timeout_tone',
+          trial_no: trial_number
+        };
+      }
+    };
+
+    var late = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<h3 style:"color:red">You did not response within the correct window.</h3>
+        <p>The next trial will start in 2 seconds.</p>`,
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+      data: function(){
+        return {
+          task: 'late',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(){
+        trial_number +=1;
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
+      }
+    };
+
+    var reward_node_press = {
+      timeline: [reward_tone, correct],
+      conditional_function: function(){
+        var reward_press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].pressed;
+        if (reward_press) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    var reward_node_wait = {
+      timeline: [timeout_tone, late],
+      conditional_function: function(){
+        var reward_press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].pressed;
+        if (reward_press) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    };
+
+    var early_node_press = {
+      timeline: [error_tone, early],
+      conditional_function: function(){
+        var early = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].early;
+        if (early) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    var early_node_wait = {
+      timeline: [reward_window, reward_node_press, reward_node_wait],
+      conditional_function: function(){
+        var early = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].early;
+        if (early) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    };
+
+    /* define test procedure */
+    var test_procedure = {
+      timeline: [fixation, cue, early_window, early_node_press, early_node_wait],
+      repetitions: n
+    };
+    timeline.push(test_procedure);
+
+    /* define debrief */
+    var debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<h1>Game Performance</h1>
+        <p>You responded correctly in ${correct_trials} of the ${n} trials.
+        <br/>Based on your performance in the experiment, you earned an extra 
+        ${correct_trials} * $0.05 = ${earned} dollars.</p>
+        <br/><br/>
+        <p>Press any key to complete the experiment. Thank you!</p>`;
+      }
+    };
+    timeline.push(debrief_block);
+
+    /* start the experiment */
+    jsPsych.run(timeline);
+
+  </script>
+</html>
