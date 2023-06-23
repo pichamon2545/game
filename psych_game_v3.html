@@ -10,6 +10,13 @@
     <script src="jspsych/plugin-fullscreen.js"></script>
     <link rel="stylesheet" href="jspsych/jspsych.css">
   </head>
+  <style>
+    .topright {
+      position: absolute;
+      top: 45px;
+      right: 24px;
+    }
+  </style>
   <body></body>
   <script type="module">
     import uniform from 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-uniform@esm/index.mjs';
@@ -21,7 +28,7 @@
     }
 
     /* number of trials */
-    var practice = 3;
+    var practice = 1;
     var actual = 3;
     var n = practice + actual;
 
@@ -113,7 +120,11 @@
     /* define fixation and test trials */
     var fixation = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: '<div style="font-size:60px; color: white">+</div>',
+      stimulus: function() {
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div style="font-size:60px; color: white">+</div>
+        <div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
+      },
       choices: "NO_KEYS",
       on_start: blackscreen,
       trial_duration: function(){
@@ -130,7 +141,11 @@
     var cue = {
       type: jsPsychAudioKeyboardResponse,
       stimulus: 'tones/3300.mp3',
-      prompt: '<div style="font-size:80px; color:red">START</div>',
+      prompt: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div style="font-size:80px; color:red">START</div>
+        <div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
+      },
       trial_duration: 100,
       choices: "NO_KEYS",
       data: function(){
@@ -143,7 +158,10 @@
 
     var early_window = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: '',
+      stimulus: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
+      },
       trial_duration: 3233,
       data: function(){
         return {
@@ -159,6 +177,10 @@
     var error_tone = {
       type: jsPsychAudioKeyboardResponse,
       stimulus: 'tones/440.mp3',
+      prompt: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
+      },
       on_start: whitescreen,
       trial_duration: 200,
       choices: "NO_KEYS",
@@ -175,9 +197,11 @@
       stimulus: function() {
         var latest_rt = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
         var rt_corrected = latest_rt + 100;
+        var earned = (correct_trials * 0.05).toFixed(2);
         return `<h3>Your response time was ${rt_corrected /= 1000} seconds.</h3>
           <p>Your response was <span style="color: red">TOO EARLY</span>.</p>
-          <p>The next trial will start in 2 seconds.</p>`;
+          <p>The next trial will start in 2 seconds.</p>
+          <div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
       },
       choices: "NO_KEYS",
       trial_duration: 2000,
@@ -196,7 +220,10 @@
 
     var reward_window = {
       type: jsPsychHtmlKeyboardResponse,  
-      stimulus: '',
+      stimulus: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
+      },
       trial_duration: 3667,
       data: function(){
         return {
@@ -212,7 +239,14 @@
     var reward_tone = {
       type: jsPsychAudioKeyboardResponse,
       stimulus: 'tones/5050.mp3',
-      prompt: '<div style="font-size:200px;">💰</div>',
+      prompt: function() {
+        if (trial_number > practice) {
+          correct_trials++;
+        };
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div style="font-size:200px;">💰</div>
+        <div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
+      },
       trial_duration: 200,
       choices: "NO_KEYS",
       data: function(){
@@ -229,9 +263,11 @@
       stimulus: function() {
         var latest_rt = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
         var rt_corrected = latest_rt + 3333;
+        var earned = (correct_trials * 0.05).toFixed(2);
         return `<h3>Your response time was ${rt_corrected /= 1000} seconds.</h3>
           <p>Your response was <span style="color: green">CORRECT</span>.</p>
-          <p>The next trial will start in 2 seconds.</p>`;
+          <p>The next trial will start in 2 seconds.</p>
+          <div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
       },
       choices: "NO_KEYS",
       trial_duration: 2000,
@@ -243,9 +279,6 @@
       },
       on_finish: function(){
         trial_number++;
-        if (trial_number > practice) {
-          correct_trials++;
-        }
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -254,6 +287,10 @@
     var timeout_tone = {
       type: jsPsychAudioKeyboardResponse,
       stimulus: 'tones/131.mp3',
+      prompt: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
+      },
       on_start: whitescreen,
       choices: "NO_KEYS",
       trial_duration: 2000,
@@ -267,8 +304,12 @@
 
     var late = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style:"color:red">You did not response within the correct window.</h3>
-        <p>The next trial will start in 2 seconds.</p>`,
+      stimulus: function(){
+        var earned = (correct_trials * 0.05).toFixed(2);
+        return `<h3 style:"color:red">You did not response within the correct window.</h3>
+        <p>The next trial will start in 2 seconds.</p>
+        <div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
+      },
       choices: "NO_KEYS",
       trial_duration: 2000,
       data: function(){
