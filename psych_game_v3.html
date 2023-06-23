@@ -6,6 +6,8 @@
     <script src="jspsych/plugin-html-keyboard-response.js"></script>
     <script src="jspsych/plugin-audio-keyboard-response.js"></script>
     <script src="jspsych/plugin-preload.js"></script>
+    <script src="jspsych/plugin-instructions.js"></script>
+    <script src="jspsych/plugin-fullscreen.js"></script>
     <link rel="stylesheet" href="jspsych/jspsych.css">
   </head>
   <body></body>
@@ -19,11 +21,16 @@
     }
 
     /* number of trials */
-    var n = 5;
+    var practice = 3;
+    var actual = 3;
+    var n = practice + actual;
+
     /* trial number */
     var trial_number = 1;
+
     /* correct trials */
     var correct_trials = 0;
+
 
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
@@ -31,7 +38,8 @@
         jsPsych.data.displayData();
       },
       show_progress_bar: true,
-      auto_update_progress_bar: false
+      auto_update_progress_bar: false,
+      experiment_width: 750
     });
 
     var preload = {
@@ -42,11 +50,16 @@
     /* create timeline */
     var timeline = [];
 
-    /* define welcome message trial */
+    /* welcome message, when subject press the button the experiment
+    will enter full screen mode */
     var welcome = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h1>Welcome to the experiment</h1>
-      <p>Press any key to begin.</p>`,
+      type: jsPsychFullscreen,
+      fullscreen_mode: true,
+      delay_after: 0,
+      message: `<h1>Welcome to the experiment</h1>`, 
+      data: {
+        task: 'welcome'
+      },
       on_start: function() {
         // set progress bar to 0 at the start of experiment
         jsPsych.setProgressBar(0);
@@ -54,34 +67,46 @@
     };
     timeline.push(welcome);
 
-    /* define instructions trial */
-    var instructions1 = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `
-        <h1>Instructions</h1>
+    var instructions ={
+      type: jsPsychInstructions,
+      pages: [
+        `<h1>Instructions</h1>
+        </br>
         <p>
           In this experiment, you will play a Timing Game. You goal will be to press 
-          a key within the <br/> 3.3 to 7 second window after an audio-visual cue. 
-          For each time you press the key in that window, <br/> you will receive a $0.05
-          reward. We ask that you do not “count” but rather “feel” the amount <br/> of time 
+          a key within the 3.3 to 7 second window after an audio-visual cue. 
+          For each time you press the key in that window, you will receive a $0.05
+          reward. We ask that you do not “count” but rather “feel” the amount of time 
           that has elapsed.</p> 
         <p>You will have about 200 opportunities to play, which means you could 
-          earn up to $10 <br/> on top of the $15 you are already receiving for your participation.</p>`
+          earn up to $10 on top of the $15 you are already receiving for your participation.</p>
+        </br>
+        <p>Use the buttons below or press arrow keys to go through the instructions</p>`,
+        `<h1>Instructions</h1>
+        </br>
+        <p>Each trial will start with a fixation (shown below) for a random amount of time, 
+          followed by an audiovisual cue (<b style="color:red">START</b>), and your goal will be to press within the
+          3.3 - 7 second window after that cue.</p>
+        </br></br>
+        <div style="font-size:60px;">+</div>
+        </br></br></br>`
+      ],
+      show_clickable_nav: true,
+      data: {
+        task: 'instructions'
+      }
     };
-    timeline.push(instructions1);
+    timeline.push(instructions);
 
     var instructions2 = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `
-      <h1>Instructions</h1>
-      <p>Each trial will start with a fixation (shown below) for a random amount of time, 
-        followed by an audiovisual cue, and your goal <br/> will be to press within the
-        3.3 - 7 second window after that cue.</p>
-      <br/><br/>
-      <div style="font-size:60px;">+</div>
-      <br/><br/><br/>
-      <p>When you are ready, press any key to begin the experiment.</p>`,
-      post_trial_gap: 300
+      <p>We will start with ${practice} test runs to familiarize yourself with the game. 
+        When you are ready, press any key to begin the test runs.</p>`,
+      post_trial_gap: 300,
+      data: {
+        task: 'instructions2'
+      }
     };
     timeline.push(instructions2);
 
@@ -163,7 +188,7 @@
         };
       },
       on_finish: function(){
-        trial_number +=1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -217,8 +242,10 @@
         };
       },
       on_finish: function(){
-        trial_number +=1;
-        correct_trials +=1;
+        trial_number++;
+        if (trial_number > practice) {
+          correct_trials++;
+        }
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -251,7 +278,7 @@
         };
       },
       on_finish: function(){
-        trial_number +=1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -305,10 +332,30 @@
       }
     };
 
+    /* practice procedure */
+    var practice_procedure = {
+      timeline: [fixation, cue, early_window, early_node_press, early_node_wait],
+      repetitions: practice
+    };
+    timeline.push(practice_procedure);
+
+    /* message before real trial starts */
+    var ready = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <p>This is the end of practice runs. When you are ready, please press any key to 
+      continue to the actual game. As a reminder, correct responses are key presses that 
+      are within the 3.3 to 7 second window after the <b style="color:red">START</b> cue.</p>`,
+      data: {
+        task: 'end_of_practice'
+      }
+    };
+    timeline.push(ready);
+
     /* define test procedure */
     var test_procedure = {
       timeline: [fixation, cue, early_window, early_node_press, early_node_wait],
-      repetitions: n
+      repetitions: actual
     };
     timeline.push(test_procedure);
 
@@ -318,14 +365,23 @@
       stimulus: function () {
         var earned = (correct_trials * 0.05).toFixed(2);
         return `<h1>Game Performance</h1>
-        <p>You responded correctly in ${correct_trials} of the ${n} trials.
-        <br/>Based on your performance in the experiment, you earned an extra 
+        </br>
+        <p>You responded correctly in ${correct_trials} of the ${actual} trials.
+        Based on your performance in the experiment, you earned an extra 
         ${correct_trials} * $0.05 = ${earned} dollars.</p>
-        <br/><br/>
-        <p>Press any key to complete the experiment. Thank you!</p>`;
+        <p>You have now completed the game. Thank you so much for your participation. 
+        We now invite you to fill out an optional questionnaire about your demographic data 
+        and your overall experience of the game. Please press any key to exit the game.</p>`;
       }
     };
     timeline.push(debrief_block);
+
+    var exit_fullscreen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: false,
+      delay_after: 0
+    };
+    timeline.push(exit_fullscreen);
 
     /* start the experiment */
     jsPsych.run(timeline);

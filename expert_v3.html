@@ -7,7 +7,7 @@
     <script src="jspsych/plugin-html-keyboard-response-persist.js"></script>
     <script src="jspsych/plugin-audio-keyboard-response.js"></script>
     <script src="jspsych/plugin-audio-keyboard-response-persist.js"></script>
-    <!-- <script src="jspsych/plugin-image-keyboard-response.js"></script> -->
+    <script src="jspsych/plugin-fullscreen.js"></script>
     <script src="jspsych/plugin-preload.js"></script>
     <link rel="stylesheet" href="jspsych/jspsych.css">
   </head>
@@ -27,18 +27,13 @@
     /* trial number */
     var trial_number = 1;
 
-    /* rewarded trials */
-    var rewarded_trials = 0;
-
     
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
       on_finish: function () {
         jsPsych.data.displayData();
       },
-      show_progress_bar: true,
-      auto_update_progress_bar: false,
-      experiment_width: 820
+      experiment_width: 860
     });
 
     var preload = {
@@ -49,26 +44,28 @@
     /* create timeline */
     var timeline = [];
 
-    /* welcome message */
+    /* welcome message, when subject press the button the experiment
+    will enter full screen mode */
     var welcome = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h1>Expert Stage</h1>
-      </br>
-      <p>We will now continue with the expert stage, the final stage of the game. As a reminder, 
-        you only need keyboard presses to play the game. 
-        We will be monitoring only your key presses and, with your permission, eye movements.
-        The reward does not depend on which key you press. Lastly, one money bag corresponds to $0.05, and 
-        we will inform you of the total reward you have earned in this stage at the end.</p>
-      </br>
-      <p>When you are ready, please press any key to start the expert stage of the game.</p>`,
+      type: jsPsychFullscreen,
+      fullscreen_mode: true,
+      delay_after: 0,
+      message: `<h1>Expert Stage</h1>`, 
       data: {
         task: 'welcome'
-      },
-      on_start: function() {
-        jsPsych.setProgressBar(0);
       }
     };
     timeline.push(welcome);
+
+    var instructions = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<h1>Expert Stage</h1>
+      <p>When you are ready, please press any key to start the expert stage of the game.</p>`,
+      data: {
+        task: 'instructions'
+      }
+    };
+    timeline.push(instructions);
 
     /* begin trials */
     var fixation = {
@@ -204,8 +201,7 @@
           var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
           var rts_corrected = rts.map(v=> v + Number(press) + 3333);
           data.time = rts_corrected;
-        };
-        rewarded_trials++;
+        }
       }
     };
 
@@ -250,8 +246,6 @@
           data.time = rts_corrected;
         };
         trial_number += 1;
-        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
     };
 
@@ -292,8 +286,6 @@
           data.time = rts_corrected;
         };
         trial_number += 1;
-        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
     };
 
@@ -364,26 +356,13 @@
     };
     timeline.push(test_procedure);
 
-    /* define debrief */
-    var debrief_block = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: function () {
-        var earned = (rewarded_trials * 0.05).toFixed(2);
-        return `<h1>Game Performance: Expert Stage</h1>
-        </br>
-        <p>You earned ${rewarded_trials} money bags (💰).
-        </br>Based on your performance in this stage, you earned an extra 
-        ${rewarded_trials} * $0.05 = ${earned} dollars.</p>
-        </br></br>
-        <p>You have now completed the game. Thank you so much for your participation. 
-        We now invite you to fill out an optional questionnaire about your demographic data
-        and your overall experience of the game. Please press any key to exit the game.</p>`;
-      },
-      data: {
-        task: 'debrief'
-      }
+    var exit_fullscreen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: false,
+      delay_after: 0
     };
-    timeline.push(debrief_block);
+    timeline.push(exit_fullscreen);
+
 
     /* start the experiment */
     jsPsych.run(timeline);

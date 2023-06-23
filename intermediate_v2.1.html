@@ -22,7 +22,7 @@
     };
 
     /* number of trials */
-    var n = 3;
+    var n = 4;
 
     /* trial number */
     var trial_number = 1;
@@ -30,7 +30,7 @@
     /* rewarded trials */
     var rewarded_trials = 0;
 
-    
+
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
       on_finish: function () {
@@ -38,7 +38,7 @@
       },
       show_progress_bar: true,
       auto_update_progress_bar: false,
-      experiment_width: 820
+      experiment_width: 800
     });
 
     var preload = {
@@ -50,25 +50,25 @@
     var timeline = [];
 
     /* welcome message */
-    var welcome = {
+    var instructions = {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h1>Expert Stage</h1>
+      stimulus: `<h1>Intermediate Stage</h1>
       </br>
-      <p>We will now continue with the expert stage, the final stage of the game. As a reminder, 
+      <p>We will now continue with the intermediate stage of the game. As a reminder, 
         you only need keyboard presses to play the game. 
         We will be monitoring only your key presses and, with your permission, eye movements.
         The reward does not depend on which key you press. Lastly, one money bag corresponds to $0.05, and 
         we will inform you of the total reward you have earned in this stage at the end.</p>
       </br>
-      <p>When you are ready, please press any key to start the expert stage of the game.</p>`,
+      <p>When you are ready, please press any key to start the intermediate stage of the game.</p>`,
       data: {
-        task: 'welcome'
+        task: 'instructions'
       },
       on_start: function() {
         jsPsych.setProgressBar(0);
       }
     };
-    timeline.push(welcome);
+    timeline.push(instructions);
 
     /* begin trials */
     var fixation = {
@@ -105,10 +105,29 @@
       }
     };
 
+    var reaction_window = {
+      type: jsPsychHtmlKeyboardResponsePersist,  
+      stimulus: '',
+      trial_duration: 400,
+      data: function(){
+        return {
+          task: 'reaction_window',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var rts = JSON.parse(data.rt);
+          var rts_corrected = rts.map(v=> v+100);
+          data.time = rts_corrected;
+        }
+      }
+    };
+
     var early_window = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '',
-      trial_duration: 3233,
+      trial_duration: 2833,
       data: function(){
         return {
           task: 'early_window',
@@ -118,11 +137,11 @@
       on_finish: function(data) {
         data.early = (data.rt != null);
         if (data.early) {
-          var rt_corrected = data.rt + 100;
+          var rt_corrected = data.rt + 500;
           data.time = rt_corrected;
         }
       }
-    } ; 
+    }
 
     var error_tone = {
       type: jsPsychAudioKeyboardResponsePersist,
@@ -139,7 +158,7 @@
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
           var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 100);
+          var rts_corrected = rts.map(v=> v + Number(press) + 500);
           data.time = rts_corrected;
         }
       }
@@ -150,7 +169,7 @@
       stimulus: '',
       trial_duration: function(){
         var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
-        return 6700 - press;
+        return 6300 - press;
       },
       data: function(){
         return {
@@ -162,7 +181,7 @@
         if (data.rt != "[]"){
           var rts = JSON.parse(data.rt);
           var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 300);
+          var rts_corrected = rts.map(v=> v + Number(press) + 700);
           data.time = rts_corrected;
         }
       }
@@ -229,6 +248,7 @@
           var rts_corrected = rts.map(v=> v + Number(press) + 3633);
           data.time = rts_corrected;
         }
+        whitescreen();
       }
     };
 
@@ -236,7 +256,6 @@
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '',
       trial_duration: 10000,
-      on_start: whitescreen,
       data: function(){
         return {
           task: 'ITI',
@@ -249,7 +268,7 @@
           var rts_corrected = rts.map(v=> v+7000);
           data.time = rts_corrected;
         };
-        trial_number += 1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -291,7 +310,7 @@
           var rts_corrected = rts.map(v=> v+9000);
           data.time = rts_corrected;
         };
-        trial_number += 1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -359,7 +378,7 @@
 
     /* define test procedure */
     var test_procedure = {
-      timeline: [fixation, cue, early_window, early_node_press, early_node_wait],
+      timeline: [fixation, cue, reaction_window, early_window, early_node_press, early_node_wait],
       repetitions: n
     };
     timeline.push(test_procedure);
@@ -369,21 +388,21 @@
       type: jsPsychHtmlKeyboardResponse,
       stimulus: function () {
         var earned = (rewarded_trials * 0.05).toFixed(2);
-        return `<h1>Game Performance: Expert Stage</h1>
+        return `<h1>Game Performance: Intermediate Stage</h1>
         </br>
         <p>You earned ${rewarded_trials} money bags (💰).
         </br>Based on your performance in this stage, you earned an extra 
         ${rewarded_trials} * $0.05 = ${earned} dollars.</p>
-        </br></br>
-        <p>You have now completed the game. Thank you so much for your participation. 
-        We now invite you to fill out an optional questionnaire about your demographic data
-        and your overall experience of the game. Please press any key to exit the game.</p>`;
+        <br/><br/>
+        <p>Press any key to complete the intermediate stage. We will then proceed to the expert stage.
+        Thank you!</p>`;
       },
       data: {
         task: 'debrief'
       }
     };
     timeline.push(debrief_block);
+
 
     /* start the experiment */
     jsPsych.run(timeline);

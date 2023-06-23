@@ -22,8 +22,8 @@
     };
 
     /* number of trials */
-    var practice = 0;
-    var run = 2;
+    var practice = 2;
+    var run = 5;
 
     /* trial number */
     var trial_number = 1;
@@ -298,11 +298,7 @@
     var show_nickel = {
       type: jsPsychHtmlKeyboardResponsePersist,  
       stimulus: '<div style="font-size:200px;">💰</div>',
-      stimulus_duration: 300,
-      trial_duration: function(){
-        var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
-        return 1800 - press;
-      },
+      trial_duration: 300,
       data: function(){
         return {
           task: 'show_nickel',
@@ -315,29 +311,37 @@
           var rts = JSON.parse(data.rt);
           var rts_corrected = rts.map(v=> v+ Number(press) + 5200);
           data.time = rts_corrected;
-        }
-        whitescreen();
+        };
       }
     };
 
+    var nickel_shown = {
+      type: jsPsychHtmlKeyboardResponsePersist,
+      stimulus: '',
+      trial_duration: function(){
+        var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
+        return 1500 - press;
+      },
+      data: function(){
+        return {
+          task: 'nickel_shown',
+          trial_no: trial_number
+        };
+      },
+      on_finish: function(data) {
+        if (data.rt != "[]"){
+          var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
+          var rts = JSON.parse(data.rt);
+          var rts_corrected = rts.map(v=> v+ Number(press) + 5500);
+          data.time = rts_corrected;
+        };
+      }
+    }
+
     var ITI = {
       type: jsPsychHtmlKeyboardResponsePersist,  
-      stimulus: function(){
-        var waited_rt = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
-        if (waited_rt > 1500) {
-            return '<div style="font-size:200px;">💰</div>';
-        } else {
-            return '';
-        }
-      },
-      stimulus_duration: function(){
-        var waited_rt = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
-        if (waited_rt > 1500) {
-            return (waited_rt - 1500);
-        } else {
-            return 10000;
-        }
-      },
+      on_start: whitescreen,
+      stimulus: '',
       trial_duration: 10000,
       data: function(){
         return {
@@ -351,7 +355,7 @@
           var rts_corrected = rts.map(v=> v+7000);
           data.time = rts_corrected;
           };
-        trial_number += 1;
+        trial_number++;
       }
     };
 
@@ -434,8 +438,20 @@
       }
     };
 
+    var close_call_node = {
+      timeline: [nickel_shown],
+      conditional_function: function(){
+        var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
+        if (press < 1500){
+            return true;
+        } else {
+            return false;
+        }
+      }
+    };
+
     var nickel_node_press = {
-      timeline: [show_nickel, ITI],
+      timeline: [show_nickel, close_call_node, ITI],
       conditional_function: function(){
         var nickel_press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].pressed;
         if (nickel_press) {
