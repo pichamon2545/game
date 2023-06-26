@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@stdlib/random-base-uniform": "^0.0.6"
+  }
+}
