@@ -514,3 +514,9 @@
 #jspsych-data-display {
   text-align: left;
 }
+
+.topright {
+  position: absolute;
+  top: 45px;
+  right: 24px;
+}
