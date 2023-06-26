@@ -36,20 +36,12 @@ Some replacements:
 - not thoroughly commented
 ### V2 (06/22/2023)
 - Encourage pressing after reward tone in beginner
-<<<<<<< HEAD
 - Show money bag emoji for longer (300ms) 
 - Money bag emoji shows for the whole 300ms even if the subject presses very close to 7000ms `(-> in beginner: restructured show_nickel and ITI, added nickel_shown)`
 #### V2.1 (06/22/2023)
 - Added progress bar to all levels
 - Added instructions in the beginner level. Inform participants of the level they are on before beginning each level.
 - Added a debriefing page (total reward earned in that stage)
-=======
-- Show money bag emoji for longer (300ms)
-- Money bag emoji shows for the whole 300ms even if the subject presses very close to 7000ms
-#### V2.1 (06/21/2023)
-- Added progress bar
-- Added a debriefing page (how many trials the subject got right, total reward earned)
->>>>>>> b81459ed714e6cf4cd8ce89879bc4848e5bf43ce
 ## Online psychology experiment
 ### V1
 - Welcome page
