@@ -17,7 +17,7 @@ To run the mouse tasks, you will need two additional plugins that are not in jsP
   right: 24px;
 }
 ```
-Alternatively, you can replace the `jspsych.css` file in your `jsPsych` folder with [this .css file](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.css). This block of code defines an extra .css class, which helps us show the participant's current reward they earned in the game so far.
+Alternatively, you can replace the `jspsych.css` file in your `jsPsych` folder with [this .css file](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.css). This block of code defines an extra .css class, which helps us show the participant's current reward they have earned in the game so far.
 
 ## Mouse tasks
 Each version consists of beginner-, intermediate-, and expert-level tasks. The tasks are designed to mirror [Allsion's mouse training tasks](https://elifesciences.org/articles/62583#s4).   
