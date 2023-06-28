@@ -68,6 +68,7 @@ var jsPsychAudioKeyboardResponsePersist = (function (jspsych) {
           // store response
           var response = {
               rt: [],
+              abs_time_press: [],
               key: [],
           };
           // record webaudio context start time
@@ -142,6 +143,7 @@ var jsPsychAudioKeyboardResponsePersist = (function (jspsych) {
               // gather the data to store for the trial
               var trial_data = {
                   rt: JSON.stringify(response.rt),
+                  abs_time_press: JSON.stringify(response.abs_time_press),
                   stimulus: trial.stimulus,
                   response: JSON.stringify(response.key),
               };
@@ -155,6 +157,7 @@ var jsPsychAudioKeyboardResponsePersist = (function (jspsych) {
           function after_response(info) {
             response.rt.push(info.rt);   
             response.key.push(info.key);
+            response.abs_time_press.push(info.abs_time_press);
           }
           const setup_keyboard_listener = () => {
               // start the response listener

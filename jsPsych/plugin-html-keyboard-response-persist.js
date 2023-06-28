@@ -77,6 +77,7 @@ var jsPsychHtmlKeyboardResponsePersist = (function (jspsych) {
           // store response
           var response = {
               rt: [],
+              abs_time_press: [],
               key: [],
           };
           // function to end trial when it is time
@@ -90,6 +91,7 @@ var jsPsychHtmlKeyboardResponsePersist = (function (jspsych) {
               // gather the data to store for the trial
               var trial_data = {
                   rt: JSON.stringify(response.rt),
+                  abs_time_press: JSON.stringify(response.abs_time_press),
                   stimulus: trial.stimulus,
                   response: JSON.stringify(response.key),
               };
@@ -105,6 +107,7 @@ var jsPsychHtmlKeyboardResponsePersist = (function (jspsych) {
               display_element.querySelector("#jspsych-html-keyboard-response-stimulus").className +=
                   " responded";
               response.rt.push(info.rt);
+              response.abs_time_press.push(info.abs_time_press);
               response.key.push(info.key);
           };
           // start the response listener

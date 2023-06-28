@@ -528,6 +528,7 @@ var jsPsychModule = (function (exports) {
                 trial_type: trial.type.info.name,
                 trial_index: progress.current_trial_global,
                 time_elapsed: this.jsPsych.getTotalTime(),
+                abs_time: new Date().getTime(),
                 internal_node_id: this.jsPsych.getCurrentTimelineNodeID(),
             };
             this.allData.push(Object.assign(Object.assign(Object.assign(Object.assign({}, data_object), trial.data), default_data), this.dataProperties));
@@ -730,6 +731,7 @@ var jsPsychModule = (function (exports) {
             const listener = (e) => {
                 const rt = Math.round((rt_method == "performance" ? performance.now() : audio_context.currentTime * 1000) -
                     startTime);
+                const abs_time_press = new Date().getTime();
                 if (rt < minimum_valid_rt) {
                     return;
                 }
@@ -742,7 +744,7 @@ var jsPsychModule = (function (exports) {
                         // remove keyboard listener if it exists
                         this.cancelKeyboardResponse(listener);
                     }
-                    callback_function({ key, rt });
+                    callback_function({ key, rt, abs_time_press });
                 }
             };
             this.listeners.add(listener);

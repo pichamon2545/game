@@ -77,6 +77,7 @@ var jsPsychHtmlKeyboardResponse = (function (jspsych) {
           // store response
           var response = {
               rt: null,
+              abs_time_press: null,
               key: null,
           };
           // function to end trial when it is time
@@ -90,6 +91,7 @@ var jsPsychHtmlKeyboardResponse = (function (jspsych) {
               // gather the data to store for the trial
               var trial_data = {
                   rt: response.rt,
+                  abs_time_press: response.abs_time_press,
                   stimulus: trial.stimulus,
                   response: response.key,
               };

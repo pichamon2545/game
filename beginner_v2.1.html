@@ -444,7 +444,9 @@
         if (data.pressed) {
           var rt_corrected = data.rt + 7000;
           data.time = rt_corrected;
-        }
+        };
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
     };
 

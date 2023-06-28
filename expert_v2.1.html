@@ -249,7 +249,7 @@
           var rts_corrected = rts.map(v=> v+7000);
           data.time = rts_corrected;
         };
-        trial_number += 1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
@@ -291,7 +291,7 @@
           var rts_corrected = rts.map(v=> v+9000);
           data.time = rts_corrected;
         };
-        trial_number += 1;
+        trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
