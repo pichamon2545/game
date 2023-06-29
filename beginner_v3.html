@@ -6,8 +6,9 @@
     <script src="jspsych/plugin-html-keyboard-response.js"></script>
     <script src="jspsych/plugin-html-keyboard-response-persist.js"></script>
     <script src="jspsych/plugin-audio-keyboard-response.js"></script>
-    <script src="jspsych/plugin-fullscreen.js"></script>
     <script src="jspsych/plugin-audio-keyboard-response-persist.js"></script>
+    <script src="jspsych/plugin-fullscreen.js"></script>
+    <script src="jspsych/plugin-instructions.js"></script>
     <script src="jspsych/plugin-preload.js"></script>
     <link rel="stylesheet" href="jspsych/jspsych.css">
   </head>
@@ -24,6 +25,7 @@
     /* number of trials */
     var practice = 2;
     var run = 5;
+    var n = practice + run;
 
     /* trial number */
     var trial_number = 1;
@@ -37,7 +39,9 @@
       on_finish: function () {
         jsPsych.data.displayData();
       },
-      experiment_width: 860
+      show_progress_bar: true,
+      auto_update_progress_bar: false,
+      experiment_width: 875
     });
 
     var preload = {
@@ -57,19 +61,68 @@
       message: `<h1>Beginner Stage</h1>`, 
       data: {
         task: 'welcome'
+      },
+      on_start: function() {
+        // set progress bar to 0 at the start of experiment
+        jsPsych.setProgressBar(0);
       }
     };
     timeline.push(welcome);
 
-    var instructions = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h1>Beginner Stage</h1>
-      <p>When you are ready, please press any key to start the beginner stage of the game.</p>`,
+    var instructions ={
+      type: jsPsychInstructions,
+      pages: [
+        `<h1>Instructions</h1>
+        </br>
+        <p>This game consists of 3 stages: beginner, intermediate, and expert. You will have the opportunity
+          to earn extra reward in all stages. In all stages, you will use keyboard presses to play the game. 
+          </br>We will be monitoring only your key presses and, with your permission, eye movements.
+          </br>Please note that <b>the reward does not depend on which key you press</b>; all keys are considered identical.
+          The crucial part of this game is that the player explores by themselves how to trigger a reward. </p>
+        </br>
+        <p>Use the buttons below or press arrow keys to go through the instructions</p>`,
+        `<h1>Instructions</h1>
+        </br>
+        <p>Each stage will consist of several rounds of game play. The start of each
+          round is indicated by the screen turning <b>black</b>. The end of each round is indicated
+          by the screen turning <b>white</b>. If you have triggered a reward, 
+          a money bag emoji will appear:</p>
+          </br></br>
+          <div style="font-size:60px;">💰</div>
+          </br></br>
+          <p>One money bag corresponds to $0.05, and we will inform you at the end of 
+          each stage the total reward you have earned in that stage. </p>`,
+        `<h1>Instructions</h1>
+        </br>
+        <p>As we go from beginner to intermediate to expert, the game format remains the same, 
+        but the conditions required to trigger a reward will become stricter.
+        You will still only need key presses to play the game, and the reward still doesn't depend on which key you press.</p>
+        <p>At times, you may feel like the game is not working in the way it is supposed to.
+        The study team will be monitoring the game as you play it and will stop the game if any error occurs. 
+        Otherwise, please be assured that the game is working as intended and continue with the game.</p>
+        </br>
+        <p>This is the end of instructions. If you have any questions about the experiment or the game, 
+        please ask them now. You can review the instructions by pressing the 'Previous' button or the left arrow key.
+        Once you are ready, we will proceed to the beginner stage of the game.</p>`
+      ],
       data: {
         task: 'instructions'
-      }
+      },
+      show_clickable_nav: true
     };
     timeline.push(instructions);
+
+    var ready = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <p>We will now start the beginner stage. 
+      When you are ready, please press any key to start the game.</p>`,
+      post_trial_gap: 300,
+      data: {
+        task: 'ready'
+      }
+    };
+    timeline.push(ready);
 
     /* begin trials */
     var fixation = {
@@ -424,6 +477,8 @@
           data.time = rts_corrected;
           };
         trial_number++;
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
     };
 
@@ -431,11 +486,11 @@
     var if_wait_practice = {
       type: jsPsychHtmlKeyboardResponse,  
       on_start: whitescreen,
-      stimulus: function(){
+      prompt: function(){
         var earned = (rewarded_trials * 0.05).toFixed(2);
-        return `<p>Try pressing a key.</p>
-        <div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
+        return `<div class="topright" style="color:black">Current Reward</br>$ ${earned}</div>`;
       },
+      stimulus: `<p>Try pressing a key.</p>`,
       stimulus_duration: 1500,
       data: function(){
         return {
@@ -449,7 +504,11 @@
         if (data.pressed) {
           var rt_corrected = data.rt + 7000;
           data.time = rt_corrected;
-        }
+        } else {
+          trial_number++;
+          var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+          jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
+        };
       }
     };
 
@@ -472,7 +531,11 @@
         if (data.pressed) {
           var rt_corrected = data.rt + 7000;
           data.time = rt_corrected;
-        }
+        } else {
+          trial_number++;
+          var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+          jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
+        };
       }
     };
 
@@ -503,6 +566,8 @@
           data.time = rts_corrected;
         };
         trial_number++;
+        var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+        jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
       }
     };
 
@@ -653,6 +718,25 @@
       repetitions: run
     };
     timeline.push(test_procedure);
+
+    var debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        var earned = (rewarded_trials * 0.05).toFixed(2);
+        return `<h1>Game Performance: Beginner Stage</h1>
+        </br>
+        <p>You earned ${rewarded_trials} money bags (💰).
+        </br>Based on your performance in this stage, you earned an extra 
+        ${rewarded_trials} * $0.05 = ${earned} dollars.</p>
+        </br></br>
+        <p>Press any key to complete the beginner stage. We will then proceed to the intermediate stage.
+        Thank you!</p>`;
+      },
+      data: {
+        task: 'debrief'
+      }
+    };
+    timeline.push(debrief_block);
 
     var exit_fullscreen = {
       type: jsPsychFullscreen,
