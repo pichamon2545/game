@@ -1,6 +1,8 @@
 # Human timing tasks
+## Check this out!
+
 ## Getting started
-I'm using the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for javascript. To run the experiments in this repository, you need to have the `jsPsych` and `tones` folders in the same directory as the `.html` file you wish to run. The directory structure should look like this:
+I'm using the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for javascript. If you wish to run the experiment from your computer, you need to have the `jsPsych` and `tones` folders in the same directory as the `.html` file you wish to run. The directory structure should look like this:
 ```markdown
 📂 MyExperiment
 --  📄 experiment.html
@@ -8,19 +10,22 @@ I'm using the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for
 --  📂 tones
 ```
 To get the jsPsych folder, download `dist archive (zip)` in [jsPsych's latest release](https://github.com/jspsych/jsPsych/releases). Create a folder called `jsPsych` in the same directory as the `.html` you want to run. Then, copy the contents of the `dist` folder in the downloaded archive into the `jsPsych` folder. See steps 1 and 2 in [jsPysch's hello world tutorial](https://www.jspsych.org/7.3/tutorials/hello-world/#option-2-download-and-host-jspsych) for more detailed instructions.
+
 ### Important
-To run the mouse tasks, you will need two additional plugins that are not in jsPsych's `dist` folder. Please download the plugins [plugin-audio-keyboard-response-persist.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-audio-keyboard-response-persist.js) and [plugin-html-keyboard-response-persist.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-html-keyboard-response-persist.js) in this repository's `jsPsych` folder and add them to your `jsPsych` folder. These plugins allow us to listen to and log all key presses within the trial duration. In addition, please add this block of code at the end of the `jspsych.css` file in your `jsPsych` folder:
-```markdown
-.topright {
-  position: absolute;
-  top: 45px;
-  right: 24px;
-}
-```
-Alternatively, you can replace the `jspsych.css` file in your `jsPsych` folder with [this .css file](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.css). This block of code defines an extra .css class, which helps us show the participant's current reward they have earned in the game so far.
+I modified 4 files in jsPsych's provided folder: `jspsych.js`, `jspsych.css`, `plugin-audio-keyboard-response.js`, and `plugin-html-keyboard-response.js`. I also added 2 extra plugins: `plugin-audio-keyboard-response-persist.js` and `plugin-html-keyboard-response-persist.js`. The changes are summarized in the table below:
+| File | Change | Description |
+|------|--------|-------------|
+|[jspsych.js](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.js)|Modified| Record the absolute time at the end of each page and the absolute time of each key press |
+|[jspsych.css](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.css)|Modified| Add .topright class to position participants' live total reward|
+|[plugin-audio-keyboard-response.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-audio-keyboard-response.js)|Modified| Record absolute time of each press|
+|[plugin-html-keyboard-response.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-html-keyboard-response.js)|Modified| Record absolute time of each press|
+|[plugin-audio-keyboard-response-persist.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-audio-keyboard-response-persist.js)|Added new file| Record all presses on each page (both in absolute time and time relative to the cue)|
+|[plugin-html-keyboard-response-persist.js](https://github.com/pichamon2545/game/blob/main/jsPsych/plugin-html-keyboard-response-persist.js)|Added new file| Record all presses on each page (both in absolute time and time relative to the cue)|
+
+To run the mouse tasks on your computer, please download the files above and add them to your `jsPsych` folder (replacing existing files of the same name).
 
 ## Mouse tasks
-Each version consists of beginner-, intermediate-, and expert-level tasks. The tasks are designed to mirror [Allsion's mouse training tasks](https://elifesciences.org/articles/62583#s4).   
+Each version consists of beginner-, intermediate-, and expert-level tasks. The tasks are designed to mirror [Allsion's mouse training tasks](https://elifesciences.org/articles/62583#s4).
 
 Some replacements:
 - licks -> key presses
