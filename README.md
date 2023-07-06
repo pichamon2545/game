@@ -5,6 +5,7 @@ We are hosting the tasks on cognition.run. You can try the tasks out following t
 - [Mouse Intermediate](https://igho7pugeo.cognition.run)
 - [Mouse Expert](https://vjveqwtp5h.cognition.run)
 - [Psychology experiment](https://4bdfgc8ohd.cognition.run)
+Please note that the interval between lamps off and cue on cognition.run is _psuedo-uniform_ using the `Math.random()` method, as opposed to the external `uniform` module used in the .html files.
 ## Getting started
 If you wish to run the experiment from your computer, you will need the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for javascript. You need to have the `jsPsych` and `tones` folders in the same directory as the `.html` file you wish to run. The directory structure should look like this:
 ```markdown
