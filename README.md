@@ -1,6 +1,6 @@
 # Human timing tasks
 ## Check this out!
-We are hosting the tasks on cognition.run. You can try the tasks out following the links below:\
+We are hosting the tasks on cognition.run. You can try the tasks out following the links below:
 
 > [Mouse Beginner](https://mhpzrl3zeh.cognition.run)\
 > [Mouse Intermediate](https://igho7pugeo.cognition.run)\
