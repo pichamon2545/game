@@ -1,8 +1,12 @@
 # Human timing tasks
 ## Check this out!
-
+We are hosting the tasks on cognition.run. You can try the tasks out following the links below:
+- [Mouse Beginner](https://mhpzrl3zeh.cognition.run)
+- [Mouse Intermediate](https://igho7pugeo.cognition.run)
+- [Mouse Expert](https://vjveqwtp5h.cognition.run)
+- [Psychology experiment](https://4bdfgc8ohd.cognition.run)
 ## Getting started
-I'm using the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for javascript. If you wish to run the experiment from your computer, you need to have the `jsPsych` and `tones` folders in the same directory as the `.html` file you wish to run. The directory structure should look like this:
+If you wish to run the experiment from your computer, you will need the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for javascript. You need to have the `jsPsych` and `tones` folders in the same directory as the `.html` file you wish to run. The directory structure should look like this:
 ```markdown
 📂 MyExperiment
 --  📄 experiment.html
@@ -12,7 +16,7 @@ I'm using the [jsPsych](https://github.com/jspsych/jsPsych/tree/main) plugin for
 To get the jsPsych folder, download `dist archive (zip)` in [jsPsych's latest release](https://github.com/jspsych/jsPsych/releases). Create a folder called `jsPsych` in the same directory as the `.html` you want to run. Then, copy the contents of the `dist` folder in the downloaded archive into the `jsPsych` folder. See steps 1 and 2 in [jsPysch's hello world tutorial](https://www.jspsych.org/7.3/tutorials/hello-world/#option-2-download-and-host-jspsych) for more detailed instructions.
 
 ### Important
-I modified 4 files in jsPsych's provided folder: `jspsych.js`, `jspsych.css`, `plugin-audio-keyboard-response.js`, and `plugin-html-keyboard-response.js`. I also added 2 extra plugins: `plugin-audio-keyboard-response-persist.js` and `plugin-html-keyboard-response-persist.js`. The changes are summarized in the table below:
+I modified 4 files in the jsPsych folder: `jspsych.js`, `jspsych.css`, `plugin-audio-keyboard-response.js`, and `plugin-html-keyboard-response.js`. I also added 2 extra plugins: `plugin-audio-keyboard-response-persist.js` and `plugin-html-keyboard-response-persist.js`. The changes are summarized in the table below:
 | File | Change | Description |
 |------|--------|-------------|
 |[jspsych.js](https://github.com/pichamon2545/game/blob/main/jsPsych/jspsych.js)|Modified| Record the absolute time at the end of each page and the absolute time of each key press |
@@ -27,7 +31,7 @@ To run the mouse tasks on your computer, please download the files above and add
 ## Mouse tasks
 Each version consists of beginner-, intermediate-, and expert-level tasks. The tasks are designed to mirror [Allsion's mouse training tasks](https://elifesciences.org/articles/62583#s4).
 
-Some replacements:
+Replacements:
 - licks -> key presses
 - houselamp turning on and off -> screen background color switching between white and black
 - LED flash -> red dot flash in the middle of the screen
@@ -47,6 +51,13 @@ Some replacements:
 - Added progress bar to all levels
 - Added instructions in the beginner level. Inform participants of the level they are on before beginning each level.
 - Added a debriefing page (total reward earned in that stage)
+### V3 (06/29/2023)
+- Enter fullscreen at the start of the experiment, exit fullscreen at the end of the experiment
+- Show the current reward earned in each stage at the top right corner of the screen
+- Add a 300ms gap between the end of instructions and the beginning of the actual task
+- Record absolute time for all key presses and events such as lamp off and cues (used in raster plot)
+- Fixed the beginner task to record the correct trial number
+
 ## Online psychology experiment
 ### V1
 - Welcome page
@@ -62,3 +73,9 @@ Some replacements:
 - Added audio feedback cues (440 Hz, 5050 Hz, 131 Hz) and money bag emoji for correct trials
 - Verbal feedback after each trial (too early/correct/too late)
 - Record the trial number for each trial
+### V3 (06/26/2023)
+- Enter fullscreen at the start of the experiment, exit fullscreen at the end of the experiment
+- Show the current reward earned in each stage at the top right corner of the screen
+- Added progress bar
+- Added practice runs to familiarize players
+- Record absolute time for all key presses
