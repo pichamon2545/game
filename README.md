@@ -39,6 +39,11 @@ Replacements:
 - houselamp turning on and off -> screen background color switching between white and black
 - LED flash -> red dot flash in the middle of the screen
 - juice reward -> a money bag emoji
+
+### To analyze data:
+- Download the folder `analysis`
+- Run `raster_human.m`, replacing the file name in line 4 with your .csv file name
+
 ### V1
 - Welcome page, requires a key press to proceed (jsPsych needs a key press to activate their audio plugins)
 - Screen background color reflects the trial period (black) and ITI (white)
