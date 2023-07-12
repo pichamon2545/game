@@ -24,7 +24,7 @@
 
     /* number of trials */
     var practice = 2;
-    var run = 5;
+    var run = 4;
     var n = practice + run;
 
     /* trial number */
@@ -158,11 +158,6 @@
           task: 'cue',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          data.time = JSON.parse(data.rt);
-        }
       }
     };
 
@@ -178,13 +173,6 @@
           task: 'reaction_window',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+100);
-          data.time = rts_corrected;
-        }
       }
     };
 
@@ -203,10 +191,6 @@
       },
       on_finish: function(data) {
         data.early = (data.rt != null);
-        if (data.early) {
-          var rt_corrected = data.rt + 500;
-          data.time = rt_corrected;
-        }
       }
     };
 
@@ -224,14 +208,6 @@
           task: 'error_tone',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 500);
-          data.time = rts_corrected;
-        }
       }
     };
 
@@ -250,14 +226,6 @@
           task: 'early',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'early_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 700);
-          data.time = rts_corrected;
-        };
       }
     };
 
@@ -273,13 +241,6 @@
           task: 'reward_window',
           trial_no: trial_number
         };
-      },
-      on_finish: function (data) {
-        data.pressed = (data.rt != null);
-        if (data.pressed) {
-          var rt_corrected = data.rt + 3333;
-          data.time = rt_corrected;
-        }
       }
     };
 
@@ -297,14 +258,6 @@
         return {
           task: 'if_press',
           trial_no: trial_number
-        };
-      },
-      on_finish: function (data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 3333);
-          data.time = rts_corrected;
         };
       }
     };
@@ -325,15 +278,7 @@
           trial_no: trial_number
         };
       },
-      on_finish: function (data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var press = jsPsych.data.get().filter({ task: 'reward_window' }).last(1).values()[0].rt;
-          var rts_corrected = rts.map(v=> v + Number(press) + 3633);
-          data.time = rts_corrected;
-        }
-        whitescreen();
-      }
+      on_finish: whitescreen
     };
 
     var reward_tone = {
@@ -349,13 +294,6 @@
           task: 'reward_tone',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+5000);
-          data.time = rts_corrected;
-        }
       }
     };
 
@@ -376,10 +314,6 @@
       trial_duration: 1800,
       on_finish: function(data) {
         data.pressed = (data.rt != null);
-        if (data.pressed) {
-          var rt_corrected = data.rt + 5200;
-          data.time = rt_corrected;
-        }
       }
     };
 
@@ -398,10 +332,6 @@
       trial_duration: 1800,
       on_finish: function(data) {
         data.pressed = (data.rt != null);
-        if (data.pressed) {
-          var rt_corrected = data.rt + 5200;
-          data.time = rt_corrected;
-        }
       }
     };
 
@@ -418,14 +348,6 @@
         return {
           task: 'show_nickel',
           trial_no: trial_number
-        };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+ Number(press) + 5200);
-          data.time = rts_corrected;
         };
       }
     };
@@ -445,14 +367,6 @@
           task: 'nickel_shown',
           trial_no: trial_number
         };
-      },
-      on_finish: function(data) {
-        if (data.rt != "[]"){
-          var press = jsPsych.data.get().filter({ task: 'waited' }).last(1).values()[0].rt;
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+ Number(press) + 5500);
-          data.time = rts_corrected;
-        };
       }
     }
 
@@ -471,11 +385,6 @@
         };
       },
       on_finish: function(data) {
-        if (data.rt != "[]"){
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+7000);
-          data.time = rts_corrected;
-          };
         trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
@@ -501,10 +410,7 @@
       trial_duration: 10000,
       on_finish: function(data) {
         data.pressed = (data.rt != null);
-        if (data.pressed) {
-          var rt_corrected = data.rt + 7000;
-          data.time = rt_corrected;
-        } else {
+        if (!data.pressed) {
           trial_number++;
           var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
           jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
@@ -528,10 +434,7 @@
       trial_duration: 10000,
       on_finish: function(data) {
         data.pressed = (data.rt != null);
-        if (data.pressed) {
-          var rt_corrected = data.rt + 7000;
-          data.time = rt_corrected;
-        } else {
+        if (!data.pressed) {
           trial_number++;
           var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
           jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
@@ -559,12 +462,6 @@
         return 10000 - press;
       },
       on_finish: function(data){
-        if (data.rt != "[]"){
-          var press = jsPsych.data.get().filter({ task: 'if_wait' }).last(1).values()[0].rt;
-          var rts = JSON.parse(data.rt);
-          var rts_corrected = rts.map(v=> v+ Number(press)+7000);
-          data.time = rts_corrected;
-        };
         trial_number++;
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
         jsPsych.setProgressBar(curr_progress_bar_value + (1/n));
