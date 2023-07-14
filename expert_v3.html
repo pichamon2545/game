@@ -86,13 +86,12 @@
 
     /* begin trials */
     var fixation = {
-      type: jsPsychHtmlKeyboardResponse,
+      type: jsPsychHtmlKeyboardResponsePersist,
       on_start: blackscreen,
       stimulus: function() {
         var earned = (rewarded_trials * 0.05).toFixed(2);
         return `<div class="topright" style="color:white">Current Reward</br>$ ${earned}</div>`;
       },
-      choices: "NO_KEYS",
       trial_duration: function(){
         return uniform(400, 1500);
       },
