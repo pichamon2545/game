@@ -39,6 +39,11 @@ Replacements:
 - houselamp turning on and off -> screen background color switching between white and black
 - LED flash -> red dot flash in the middle of the screen
 - juice reward -> a money bag emoji
+
+### To analyze data:
+- Download the folder `analysis`
+- Run `raster_human.m`, replacing the file name in line 4 with your .csv file name
+
 ### V1
 - Welcome page, requires a key press to proceed (jsPsych needs a key press to activate their audio plugins)
 - Screen background color reflects the trial period (black) and ITI (white)
@@ -60,6 +65,8 @@ Replacements:
 - Add a 300ms gap between the end of instructions and the beginning of the actual task
 - Record absolute time for all key presses and events such as lamp off and cues (used in raster plot)
 - Fixed the beginner task to record the correct trial number
+- Took out code that record time with respect to cue (do that in matlab instead)
+- Record key presses between lamp off and cue
 
 ## Online psychology experiment
 ### V1
