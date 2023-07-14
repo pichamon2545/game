@@ -65,6 +65,8 @@ Replacements:
 - Add a 300ms gap between the end of instructions and the beginning of the actual task
 - Record absolute time for all key presses and events such as lamp off and cues (used in raster plot)
 - Fixed the beginner task to record the correct trial number
+- Took out code that record time with respect to cue (do that in matlab instead)
+- Record key presses between lamp off and cue
 
 ## Online psychology experiment
 ### V1
